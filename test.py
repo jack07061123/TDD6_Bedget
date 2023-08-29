@@ -8,7 +8,7 @@ class TestBudget(unittest.TestCase):
     def setUp(self):
         self.budgetservice = BudgetService()
 
-    def test_query_complete_months(self):
+    def test_query_completed_months(self):
         self.budgetservice.budget_repo.budget_list = [
             Budget("202301", 31),
             Budget("202302", 28)
@@ -17,6 +17,18 @@ class TestBudget(unittest.TestCase):
         result = self.budgetservice.query(
             datetime(2023, 1, 1).date(),  datetime(2023, 2, 28).date())
         expected = 59
+
+        self.assertEqual(result, expected)
+
+    def test_query_not_completed_months(self):
+        self.budgetservice.budget_repo.budget_list = [
+            Budget("202301", 31),
+            Budget("202302", 28)
+        ]
+
+        result = self.budgetservice.query(
+            datetime(2023, 1, 31).date(),  datetime(2023, 2, 10).date())
+        expected = 11
 
         self.assertEqual(result, expected)
 
@@ -29,6 +41,42 @@ class TestBudget(unittest.TestCase):
         result = self.budgetservice.query(
             datetime(2023, 1, 1).date(),  datetime(2023, 1, 1).date())
         expected = 1
+
+        self.assertEqual(result, expected)
+
+    def test_query_leap_year(self):
+        self.budgetservice.budget_repo.budget_list = [
+            Budget("202001", 31),
+            Budget("202002", 29)
+        ]
+
+        result = self.budgetservice.query(
+            datetime(2020, 1, 1).date(),  datetime(2020, 2, 29).date())
+        expected = 60
+
+        self.assertEqual(result, expected)
+
+    def test_query_not_in_availale_range(self):
+        self.budgetservice.budget_repo.budget_list = [
+            Budget("202301", 31),
+            Budget("202302", 28)
+        ]
+
+        result = self.budgetservice.query(
+            datetime(2020, 1, 1).date(),  datetime(2020, 2, 29).date())
+        expected = 0
+
+        self.assertEqual(result, expected)
+
+    def test_query_end_earlier_than_start(self):
+        self.budgetservice.budget_repo.budget_list = [
+            Budget("202301", 31),
+            Budget("202302", 28)
+        ]
+
+        result = self.budgetservice.query(
+            datetime(2020, 2, 29).date(), datetime(2020, 1, 1).date())
+        expected = 0
 
         self.assertEqual(result, expected)
 

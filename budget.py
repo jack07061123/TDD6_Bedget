@@ -6,18 +6,6 @@ from calendar import monthrange
 from dateutil.relativedelta import relativedelta
 
 
-# result = []
-# today = datetime.date.today()
-# current = datetime.date(2010, 8, 1)
-
-# while current <= today:
-#     result.append(current)
-#     current += relativedelta(months=1)
-
-
-# == == == == == == == ==
-
-
 class BudgetService:
     def __init__(self) -> None:
         self.budget_repo = BudgetRepo()
